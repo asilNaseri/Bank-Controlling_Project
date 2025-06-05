@@ -1,31 +1,321 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.6.33829.357
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bank_Controlling", "Bank_Controlling\Bank_Controlling.vcxproj", "{D4D1CBCF-4BBC-4C19-B080-CD7BCB642F87}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D4D1CBCF-4BBC-4C19-B080-CD7BCB642F87}.Debug|x64.ActiveCfg = Debug|x64
-		{D4D1CBCF-4BBC-4C19-B080-CD7BCB642F87}.Debug|x64.Build.0 = Debug|x64
-		{D4D1CBCF-4BBC-4C19-B080-CD7BCB642F87}.Debug|x86.ActiveCfg = Debug|Win32
-		{D4D1CBCF-4BBC-4C19-B080-CD7BCB642F87}.Debug|x86.Build.0 = Debug|Win32
-		{D4D1CBCF-4BBC-4C19-B080-CD7BCB642F87}.Release|x64.ActiveCfg = Release|x64
-		{D4D1CBCF-4BBC-4C19-B080-CD7BCB642F87}.Release|x64.Build.0 = Release|x64
-		{D4D1CBCF-4BBC-4C19-B080-CD7BCB642F87}.Release|x86.ActiveCfg = Release|Win32
-		{D4D1CBCF-4BBC-4C19-B080-CD7BCB642F87}.Release|x86.Build.0 = Release|Win32
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {549564D1-DCEE-4B6E-902E-5F035659B3BA}
-	EndGlobalSection
-EndGlobal
+#include <iostream>
+#include <vector>
+#include <string>
+#include <limits>
+using namespace std;
+
+class Customer {
+private:
+    string name;
+    string fatherName;
+    int balance;
+    int id;
+public:
+    
+    Customer() : balance(0), id(0) {}
+    
+    Customer(string name, string fatherName, int balance, int id) {
+        this->name = name;
+        this->fatherName = fatherName;
+        this->balance = balance;
+        this->id = id;
+    }
+
+    // Set & get for name
+    void setName(string name) {
+        this->name = name;
+    }
+    string getName() const {
+        return name;
+    }
+
+    // Set & get for fatherName
+    void setFatherName(string fatherName) {
+        this->fatherName = fatherName;
+    }
+    string getFatherName() const {
+        return fatherName;
+    }
+
+    // Set & get for balance
+    void setBalance(int balance) {
+        this->balance = balance;
+    }
+    int getBalance() const {
+        return balance;
+    }
+
+    // Set & get for id
+    void setId(int id) {
+        this->id = id;
+    }
+    int getId() const {
+        return id;
+    }
+
+    // Print info
+    void printInfo() const {
+        cout << id << " : " << name << " " << fatherName << " " << balance << endl;
+    }
+
+    // Update balance
+    void updateBalance(int value) {
+        this->balance += value;
+    }
+};
+
+bool isDuplicateId(const vector<Customer>& customers, int id) {
+    for (int i = 0; i < customers.size(); i++) {
+        if (customers[i].getId() == id) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void AddCustomer(vector<Customer>& customers) {
+    system("cls");
+    
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    
+    string name, fatherName;
+    int balance, id;
+
+    cout << "Please enter name: ";
+    getline(cin, name);
+
+    cout << "Please enter father name: ";
+    getline(cin, fatherName);
+
+    cout << "Please enter balance: ";
+    bool validBalance = false;
+    while (!validBalance) {
+        if (cin >> balance) {
+            if (balance < 0) {
+                cout << "Balance cannot be negative. Please enter a valid balance: ";
+            }
+            else {
+                validBalance = true;
+            }
+        }
+        else {
+            cout << "Invalid input. Please enter a valid integer balance: ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
+    
+    while (true) {
+        cout << "Please enter id: ";
+        if (cin >> id) {
+            if (id < 0) {
+                cout << "ID cannot be negative. Please enter a valid ID: ";
+                continue;
+            }
+            if (!isDuplicateId(customers, id)) {
+                break;
+            }
+            else {
+                cout << "This ID exists! Please select another one!\n";
+            }
+        }
+        else {
+            cout << "Invalid input. Please enter a valid integer ID: ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
+   
+    Customer sample(name, fatherName, balance, id);
+    customers.push_back(sample);
+    cout << "-------------------Customer added successfully---------------------\n";
+}
+
+void showCustomers(const vector<Customer>& customers) {
+    system("cls");
+    if (customers.empty()) {
+        cout << "---------------------No customers available--------------------\n";
+    }
+    else {
+        for (int i = 0; i < customers.size(); i++) {
+            customers[i].printInfo();
+        }
+    }
+}
+
+void searchCustomer(const vector<Customer>& customers) {
+    system("cls");
+    cout << "Please enter ID to search: ";
+    int id;
+    if (cin >> id) {
+        bool isFound = false;
+        for (int i = 0; i < customers.size(); i++) {
+            if (customers[i].getId() == id) {
+                customers[i].printInfo();
+                isFound = true;
+                break;
+            }
+        }
+        if (!isFound) {
+            cout << "---------------------------No customer found with this ID-----------------------------\n";
+        }
+    }
+    else {
+        cout << "Invalid input. Please enter a valid integer ID.\n";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+}
+
+void changeCustomer(vector<Customer>& customers) {
+    system("cls");
+    int id;
+    cout << "Please enter ID: ";
+    if (cin >> id) {
+        bool isFound = false;
+        for (int i = 0; i < customers.size(); i++) {
+            if (customers[i].getId() == id) {
+                isFound = true;
+                
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Previous name: " << customers[i].getName() << endl;
+                cout << "Please enter new name: ";
+                string newName;
+                getline(cin, newName);
+                customers[i].setName(newName);
+                cout << "--------------------------Name updated----------------------------\n";
+                break;
+            }
+        }
+        if (!isFound) {
+            cout << "------------------------No customer found with this ID-------------------------\n";
+        }
+    }
+    else {
+        cout << "Invalid input. Please enter a valid integer ID.\n";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+}
+
+void deleteCustomer(vector<Customer>& customers) {
+    system("cls");
+    int id;
+    cout << "Please enter ID to delete: ";
+    if (cin >> id) {
+        bool isFound = false;
+        for (int i = 0; i < customers.size(); i++) {
+            if (customers[i].getId() == id) {
+                isFound = true;
+                customers.erase(customers.begin() + i);
+                cout << "--------------------------Customer deleted----------------------------\n";
+                break;
+            }
+        }
+        if (!isFound) {
+            cout << "------------------------No customer found with this ID-------------------------\n";
+        }
+    }
+    else {
+        cout << "Invalid input. Please enter a valid integer ID.\n";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+}
+
+void getLoan(vector<Customer>& customers) {
+    system("cls");
+    int id;
+    cout << "Please enter ID: ";
+    if (cin >> id) {
+       
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        int value;
+        bool validInput = false;
+        cout << "Enter loan amount: ";
+
+        while (!validInput) {
+            if (cin >> value) { 
+                if (value < 0) {
+                    cout << "Loan amount cannot be negative. Please enter a valid amount: ";
+                }
+                else {
+                    validInput = true; 
+                }
+            }
+            else {
+               
+                cout << "Invalid input. Please enter a valid integer amount: ";
+                cin.clear(); 
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+            }
+        }
+
+        bool isFound = false;
+        for (int i = 0; i < customers.size(); i++) {
+            if (customers[i].getId() == id) {
+                if (customers[i].getBalance() >= value) {
+                    isFound = true;
+                    customers[i].updateBalance(-value); 
+                    cout << "--------------------------Loan processed----------------------------\n";
+                }
+                else {
+                    cout << "------------------------Insufficient balance for this loan-------------------------\n";
+                }
+                break;
+            }
+        }
+
+        if (!isFound) {
+            cout << "------------------------No customer found with this ID-------------------------\n";
+        }
+    }
+    else {
+        cout << "Invalid input. Please enter a valid integer ID.\n";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+}
+
+int main(int argc, char** argv) {
+    vector<Customer> customers;
+
+    while (true) {
+        cout << "1-Add Customer\n2-Show Customers\n3-Search Customer\n4-Change Customer\n5-Delete Customer\n6-Loan\n7-Exit\nEnter option: ";
+        int opt;
+        if (cin >> opt) {
+            if (opt == 1) {
+                AddCustomer(customers);
+            }
+            else if (opt == 2) {
+                showCustomers(customers);
+            }
+            else if (opt == 3) {
+                searchCustomer(customers);
+            }
+            else if (opt == 4) {
+                changeCustomer(customers);
+            }
+            else if (opt == 5) {
+                deleteCustomer(customers);
+            }
+            else if (opt == 6) {
+                getLoan(customers);
+            }
+            else if (opt == 7) {
+                break;
+            }
+        }
+        else {
+            cout << "Invalid input. Please enter a valid option.\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
+    return 0;
+}
